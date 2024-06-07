@@ -34,6 +34,8 @@ public class Application {
             } else {
                 System.out.println("Not found");
             }
+
+            System.out.println(dao.getEntities());
         }
     }
 }

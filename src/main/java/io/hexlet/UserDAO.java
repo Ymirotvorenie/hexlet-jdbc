@@ -3,6 +3,8 @@ package io.hexlet;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class UserDAO {
@@ -23,7 +25,7 @@ public class UserDAO {
                 var generatedKeys = preparedStatement.getGeneratedKeys();
 
                 if (generatedKeys.next()) {
-                    user.setId(generatedKeys.getLong(1));
+                    user.setId(generatedKeys.getLong("id"));
                 } else {
                     throw new SQLException("DB have not returned an id after saving an entity");
                 }
@@ -63,5 +65,24 @@ public class UserDAO {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         }
+    }
+
+    public List<User> getEntities() throws SQLException {
+        var users = new ArrayList<User>();
+        var querySelectAll = "SELECT * FROM users";
+
+        try (var stmt = connection.createStatement()) {
+            var resultSet = stmt.executeQuery(querySelectAll);
+            while (resultSet.next()) {
+                var id = resultSet.getLong("id");
+                var name = resultSet.getString("username");
+                var phone = resultSet.getString("phone");
+                var user = new User(name, phone);
+                user.setId(id);
+
+                users.add(user);
+            }
+        }
+        return users;
     }
 }
